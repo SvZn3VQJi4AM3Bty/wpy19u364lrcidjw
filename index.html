@@ -31,15 +31,15 @@
     }
     h1 { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.35rem; }
     h2 { font-size: 1rem; margin: 1.25rem 0 0.5rem; color: #c8d0dc; }
-    p.meta { font-size: 0.8rem; color: #9aa3b2; margin: 0 0 0.75rem; line-height: 1.55; }
+    p.meta { font-size: 0.8rem; color: #fff; margin: 0 0 1rem; line-height: 1.68; font-weight: 400; opacity: 0.9; }
     .controls {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 0.75rem 1rem;
-      margin-bottom: 0.75rem;
+      gap: 0.85rem 1.1rem;
+      margin-bottom: 0.95rem;
       font-size: 0.8rem;
-      color: #b8c0cc;
+      color: #fff;
     }
     .controls label { cursor: pointer; user-select: none; }
     /** ホスト配列（US/JIS）：スロット・keycode 行とレイヤータブのあいだの独立行 */
@@ -48,10 +48,10 @@
       flex-wrap: wrap;
       align-items: center;
       gap: 0.35rem 0.75rem;
-      margin: 0 0 0.75rem 0;
+      margin: 0 0 0.95rem 0;
       padding: 0;
       font-size: 0.8rem;
-      color: #b8c0cc;
+      color: #fff;
     }
     .legend-row label { cursor: pointer; user-select: none; }
     .legend-toggle {
@@ -73,12 +73,12 @@
       flex-wrap: wrap;
       gap: 0.5rem;
       align-items: center;
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.95rem;
     }
     .toolbar button {
       background: #2d3542;
       border: 1px solid #4a5568;
-      color: #e8eaed;
+      color: #fff;
       padding: 0.45rem 0.75rem;
       border-radius: 6px;
       cursor: pointer;
@@ -103,25 +103,26 @@
     .toolbar button.layer-tab .layer-tab__num {
       font-size: 0.58rem;
       font-weight: 500;
-      color: #9aa3b2;
+      color: #fff;
       letter-spacing: 0.02em;
     }
     .toolbar button.layer-tab .layer-tab__name {
       font-size: 0.68rem;
       font-weight: 400;
-      color: #e8eaed;
+      color: #fff;
     }
     .toolbar button.layer-tab.active .layer-tab__num {
-      color: rgba(255, 255, 255, 0.88);
+      color: #fff;
     }
     .toolbar button.layer-tab.active .layer-tab__name {
       color: #fff;
     }
-    .layer-title {
-      font-size: 0.95rem;
-      margin-bottom: 0.6rem;
-      color: #c8d0dc;
+    .toolbar button.view-mode-tab {
+      min-width: 8.2rem;
+      font-size: 0.8rem;
+      font-weight: 600;
     }
+    .layer-title { font-size: 0.95rem; margin-bottom: 0.78rem; color: #fff; line-height: 1.4; }
     /**
      * キー配列の可視化ブロックのみ拡大（凡例以降の details.doc より視認性を上げる）
      * --u を上げるとキー・エンコーダ・スタビ行の寸法がまとめてスケールする
@@ -151,6 +152,9 @@
     .kb-viz-region .toolbar button.layer-tab .layer-tab__name {
       font-size: 0.76rem;
     }
+    .kb-viz-region .toolbar button.view-mode-tab {
+      font-size: 0.84rem;
+    }
     .kb-viz-region .layer-title {
       font-size: 1.05rem;
     }
@@ -160,10 +164,14 @@
     .kb-viz-region .slot-badge {
       font-size: 10px;
     }
-    .kb-wrap { position: relative; }
+    .kb-wrap {
+      position: relative;
+      overflow-x: auto;
+      padding-bottom: 0.35rem;
+    }
     .kb-wrap.kb-wrap--hide-slots .slot-badge { display: none; }
     .kb-wrap.kb-wrap--hide-codes .code-badge { display: none; }
-    .kb { display: flex; flex-direction: column; gap: var(--gap); }
+    .kb { display: flex; flex-direction: column; gap: var(--gap); min-width: max-content; }
     /* 縦は揃え：親指行でエンコーダが高さを食わないよう center */
     .kb .row {
       display: flex;
@@ -263,18 +271,109 @@
       box-sizing: border-box;
     }
     .encoder .slot-badge { left: 50%; transform: translateX(-50%); top: 4px; }
+    .is-hidden { display: none !important; }
+
+    .key.integrated-key {
+      background: #e6e8ec;
+      color: #10151d;
+      border-color: #5b6472;
+      padding: 3px;
+    }
+    .encoder.integrated-encoder {
+      background: #d6dae1;
+      border-style: solid;
+      border-color: #5b6472;
+      color: #10151d;
+      margin-left: calc(var(--u) * 0.2);
+      padding: 0;
+    }
+    .integrated-cell {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      line-height: 1.05;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      overflow: hidden;
+    }
+    .integrated-cell > span {
+      position: absolute;
+      max-width: 49%;
+      text-align: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      letter-spacing: 0;
+      font-weight: 600;
+    }
+    .integrated-cell > span.is-active-layer {
+      color: #dc2626 !important;
+      font-weight: 900;
+    }
+    .integrated-cell .l0 {
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 68%;
+      font-size: 0.56rem;
+      font-weight: 600;
+    }
+    .integrated-cell .l1 {
+      right: 2px;
+      top: 2px;
+      font-size: 0.56rem;
+      text-align: right;
+      color: #213047;
+    }
+    .integrated-cell .l2 {
+      right: 2px;
+      bottom: 2px;
+      font-size: 0.56rem;
+      text-align: right;
+      color: #25411f;
+    }
+    .integrated-cell .l3 {
+      left: 2px;
+      bottom: 2px;
+      font-size: 0.56rem;
+      text-align: left;
+      color: #55261a;
+    }
+    .integrated-cell .l4 {
+      left: 2px;
+      top: 2px;
+      font-size: 0.56rem;
+      text-align: left;
+      color: #3a214f;
+    }
+
+    .kb-wrap.kb-wrap--integrated {
+      --u: 64px;
+      --gap: 5px;
+    }
+    .kb-wrap.kb-wrap--integrated .key {
+      font-size: 0.68rem;
+    }
+    .kb-wrap.kb-wrap--integrated .integrated-cell .l0 {
+      font-size: 0.7rem;
+      font-weight: 400;
+    }
+    .kb-wrap.kb-wrap--integrated .integrated-cell .l1,
+    .kb-wrap.kb-wrap--integrated .integrated-cell .l2,
+    .kb-wrap.kb-wrap--integrated .integrated-cell .l3,
+    .kb-wrap.kb-wrap--integrated .integrated-cell .l4 { font-size: 0.55rem; }
     details.doc {
-      margin-top: 1.25rem;
-      background: #222831;
+      margin-top: 1.45rem;
+      background: #2a2f36;
       border: 1px solid #3d4450;
       border-radius: 8px;
-      padding: 0.5rem 1rem 1rem;
+      padding: 0.65rem 1rem 1.15rem;
     }
     details.doc > summary {
       cursor: pointer;
       font-weight: 600;
-      color: #94a3b8;
-      padding: 0.35rem 0;
+      color: #fff;
+      padding: 0.45rem 0;
+      line-height: 1.4;
     }
     details.doc table {
       width: 100%;
@@ -284,19 +383,27 @@
     }
     details.doc th, details.doc td {
       border: 1px solid #3d4450;
-      padding: 0.35rem 0.5rem;
+      padding: 0.4rem 0.55rem;
       text-align: left;
+      line-height: 1.45;
     }
-    details.doc th { background: #2a3140; color: #cbd5e1; }
-    details.doc ul { margin: 0.4rem 0; padding-left: 1.25rem; font-size: 0.82rem; line-height: 1.55; color: #b8c4d4; }
-    details.doc p { font-size: 0.82rem; line-height: 1.55; color: #b8c4d4; margin: 0.4rem 0; }
+    details.doc th { background: #343a44; color: #fff; font-weight: 700; }
+    details.doc ul { margin: 0.42rem 0 0.55rem; padding-left: 1.35rem; font-size: 0.82rem; line-height: 1.55; color: #fff; font-weight: 400; opacity: 0.92; }
+    details.doc li { margin: 0.1rem 0; }
+    details.doc p { font-size: 0.82rem; line-height: 1.55; color: #fff; margin: 0.42rem 0 0.56rem; font-weight: 400; opacity: 0.92; }
+    details.doc h2 { margin: 1rem 0 0.55rem; line-height: 1.35; }
+    details.doc h2:not(:first-of-type) {
+      margin-top: 2.2rem;
+      padding-top: 0.65rem;
+    }
     footer.tech {
-      margin-top: 1rem;
+      margin-top: 1.2rem;
       font-size: 0.72rem;
-      color: #7d8694;
-      line-height: 1.55;
+      color: #fff;
+      line-height: 1.7;
+      opacity: 0.78;
     }
-    .enc-note { font-size: 0.75rem; color: #8b95a5; margin-top: 0.5rem; }
+    .enc-note { font-size: 0.75rem; color: #fff; margin-top: 0.75rem; font-weight: 400; line-height: 1.6; opacity: 0.9; }
     code { background: #2a3038; padding: 0.1em 0.35em; border-radius: 4px; font-size: 0.85em; }
   </style>
 </head>
@@ -308,6 +415,7 @@
   <div class="controls">
     <label><input type="checkbox" id="toggle-slots" checked /> スロット番号（#0〜#60）を表示</label>
     <label><input type="checkbox" id="toggle-codes" checked /> keycodeを表示</label>
+    <label><input type="checkbox" id="toggle-extras" /> スペースレール + Enc を表示</label>
   </div>
 
   <div class="legend-row">
@@ -316,6 +424,11 @@
       <label><input type="radio" name="legend" id="legend-jis" value="jis" checked /> JIS</label>
       <label><input type="radio" name="legend" id="legend-us" value="us" /> US</label>
     </div>
+  </div>
+
+  <div class="toolbar" id="view-modes" role="tablist" aria-label="表示モード選択">
+    <button type="button" class="view-mode-tab active" id="view-integrated" role="tab" aria-selected="true">一覧表示（L0-L4）</button>
+    <button type="button" class="view-mode-tab" id="view-single" role="tab" aria-selected="false">単一レイヤー表示</button>
   </div>
 
   <div class="toolbar" id="layer-tabs" role="tablist" aria-label="レイヤー選択"></div>
@@ -370,21 +483,21 @@
     <h2>Key Override</h2>
     <p><code>keymap.c</code> の <code>key_overrides</code> による割り当て:</p>
     <ul>
-      <li><strong>LAlt 押下中</strong>にスペース（<code>LT(L_SYM, KC_SPC)</code>）を押す → <strong>Alt+Tab</strong></li>
-      <li><strong>LShift 押下中</strong>に変換（<code>LT(L_ADJ, KC_LNG1)</code>）のタップを押す → <strong>F14</strong></li>
+      <li>LAlt 押下中にスペース（<code>LT(L_SYM, KC_SPC)</code>）を押す → Alt+Tab</li>
+      <li>LShift 押下中に変換（<code>LT(L_ADJ, KC_LNG1)</code>）のタップを押す → F14</li>
     </ul>
 
     <h2>AIへキーマップ修正を指示する方法</h2>
     <p>次の方法のいずれかで指定することが推奨です。</p>
     <ul>
-      <li><strong>スロット番号</strong> … 画面上の <code>#37</code> のように出ている番号で「<strong>レイヤー2のスロット37を KC_XXX に</strong>」と書く（<code>keymap.c</code> の <code>LAYOUT</code> 引数の並びと一致）。</li>
-      <li><strong>レイヤー + 見た目位置</strong> … 「<strong>L1 を表示した状態で、Q の位置</strong>」「<strong>一番下の列の矢印の左</strong>」など。</li>
-      <li><strong>いまのラベル</strong> … 「<strong>BkTab になっているキーを ○○ に</strong>」。</li>
+      <li>スロット番号 … 画面上の <code>#37</code> のように出ている番号で「レイヤー2のスロット37を KC_XXX に」と書く（<code>keymap.c</code> の <code>LAYOUT</code> 引数の並びと一致）。</li>
+      <li>レイヤー + 見た目位置 … 「L1 を表示した状態で、Q の位置」「一番下の列の矢印の左」など。</li>
+      <li>いまのラベル … 「BkTab になっているキーを ○○ に」。</li>
     </ul>
     <p>複数キーは箇条書きにすると安全です。カスタムキー（<code>enum custom_keycodes</code>）を増やす場合は、その旨も書いてください。</p>
 
     <h2>メンテナンス</h2>
-    <p>表示ラベルの揃え先は <code>keymap_us_jis_label_mapping_template.md</code> の <strong>US ラベル</strong>列（物理スロット＝<code>keymap.c</code>の<code>LAYOUT</code>順）です。<code>keymap.c</code> を変えたら、まず <code>keymap_us_jis_label_mapping_template.md</code> の US/JIS を直し、続けてこの HTML の <code>LAYERS</code> の <code>keys</code>（US 表記）に反映してください。スロット番号は HTML 内で整合します。<strong>JIS</strong> は <code>toJisLabel()</code> により US から表示変換（差分は <code>JIS_LABEL_MAP</code> 等。表示のみ・ファーム無関係）。<code>layer_state_set_user</code> の LED を変えたら、レイヤー概要表の「LED」列も合わせてください。</p>
+    <p>表示ラベルの揃え先は <code>keymap_us_jis_label_mapping_template.md</code> の US ラベル列（物理スロット＝<code>keymap.c</code>の<code>LAYOUT</code>順）です。<code>keymap.c</code> を変えたら、まず <code>keymap_us_jis_label_mapping_template.md</code> の US/JIS を直し、続けてこの HTML の <code>LAYERS</code> の <code>keys</code>（US 表記）に反映してください。スロット番号は HTML 内で整合します。JIS は <code>toJisLabel()</code> により US から表示変換（差分は <code>JIS_LABEL_MAP</code> 等。表示のみ・ファーム無関係）。<code>layer_state_set_user</code> の LED を変えたら、レイヤー概要表の「LED」列も合わせてください。</p>
   </details>
 
   <footer class="tech">
@@ -621,12 +734,20 @@
   const encNote = document.getElementById("enc-note");
   const toggleSlots = document.getElementById("toggle-slots");
   const toggleCodes = document.getElementById("toggle-codes");
+  const toggleExtras = document.getElementById("toggle-extras");
   const legendUs = document.getElementById("legend-us");
   const legendJis = document.getElementById("legend-jis");
+  const viewSingle = document.getElementById("view-single");
+  const viewIntegrated = document.getElementById("view-integrated");
+  const tabsWrap = document.getElementById("layer-tabs");
 
   const LEGEND_STORAGE_KEY = "olsk60_keymap_legend_mode";
+  const VIEW_MODE_SINGLE = "single";
+  const VIEW_MODE_INTEGRATED = "integrated";
+  const INTEGRATED_LAYER_IDS = [0, 1, 2, 3, 4];
   let currentLayerIndex = 0;
   let activeKeycodes = [];
+  let currentViewMode = VIEW_MODE_SINGLE;
 
   try {
     if (localStorage.getItem(LEGEND_STORAGE_KEY) === "jis") {
@@ -678,6 +799,10 @@
     return LAYER_KEYCODES[layer.id] || [];
   }
 
+  function getLayerById(id) {
+    return LAYERS.find((layer) => layer.id === id);
+  }
+
   function esc(s) {
     const d = document.createElement("div");
     d.textContent = s;
@@ -717,6 +842,92 @@
 
   function encHtml(label, slot) {
     return `<div class="encoder" title="エンコーダ押下（スロット #${slot}）"><span class="slot-badge">#${slot}</span><span class="code-badge">${esc(activeKeycodes[slot] || "")}</span>${esc(label)}</div>`;
+  }
+
+  function shortIntegratedToken(token) {
+    const map = {
+      "LCtrl": "^",
+      "LShift": "+",
+      "LGui": "#",
+      "LAlt": "!",
+      "RAlt": "!",
+      "Enter": "Ent",
+      "Backspace": "Bsp",
+      "Delete": "Del",
+      "Space": "Spc",
+      "Tab": "Tab",
+      "BkTab": "BTab",
+      "Home": "Hm",
+      "End": "End",
+      "PgUp": "PgU",
+      "PgDn": "PgD",
+      "NumLock": "Num",
+      "ScrollBoost": "Scr+",
+      "Play/Pause": "Play",
+      "Prev": "Prv",
+      "Next": "Nxt",
+      "Mute": "Mut",
+      "Bright+": "Br+",
+      "Bright-": "Br-",
+      "Vol+": "V+",
+      "Vol-": "V-",
+      "KP0": "K0",
+      "KP1": "K1",
+      "KP2": "K2",
+      "KP3": "K3",
+      "KP4": "K4",
+      "KP5": "K5",
+      "KP6": "K6",
+      "KP7": "K7",
+      "KP8": "K8",
+      "KP9": "K9"
+    };
+    return map[token] || token;
+  }
+
+  function compactIntegratedLabel(label) {
+    if (label === "▽" || label === "·") return label;
+    const normalized = label.replace(/\s*\+\s*/g, "+").replace(/\n/g, "/");
+    const compactParts = normalized.split("/").map((part) => {
+      const tokens = part.split("+").map(shortIntegratedToken);
+      // 修飾キーは記号（^ ! + #）で先頭連結し、例: ^+Tab / !#S
+      const mods = [];
+      const mains = [];
+      tokens.forEach((t) => {
+        if (t === "^" || t === "!" || t === "+" || t === "#") mods.push(t);
+        else mains.push(t);
+      });
+      return mods.join("") + mains.join("+");
+    });
+    return compactParts.join("/");
+  }
+
+  function integratedCellHtml(slot, layerKeys, activeLayerId) {
+    const layerIds = INTEGRATED_LAYER_IDS;
+    const labels = layerKeys.map((keys) => compactIntegratedLabel(keys[slot] || "·"));
+    const activeClass = (layerId) => {
+      if (activeLayerId !== layerId) return "";
+      if (activeLayerId === 0) return "";
+      return " is-active-layer";
+    };
+    return [
+      '<div class="integrated-cell">',
+      `<span class="l4${activeClass(layerIds[1])}">${esc(labels[1])}</span>`,
+      `<span class="l1${activeClass(layerIds[2])}">${esc(labels[2])}</span>`,
+      `<span class="l0${activeClass(layerIds[0])}">${esc(labels[0])}</span>`,
+      `<span class="l3${activeClass(layerIds[4])}">${esc(labels[4])}</span>`,
+      `<span class="l2${activeClass(layerIds[3])}">${esc(labels[3])}</span>`,
+      "</div>"
+    ].join("");
+  }
+
+  function rowKeyIntegrated(wu, slot, layerKeys, activeLayerId) {
+    const w = wu === 2 ? "calc(2 * var(--u))" : `calc(${wu} * var(--u))`;
+    return `<div class="key integrated-key" style="width:${w}">${integratedCellHtml(slot, layerKeys, activeLayerId)}</div>`;
+  }
+
+  function encIntegrated(slot, layerKeys, activeLayerId) {
+    return `<div class="encoder integrated-encoder" title="エンコーダ押下（L0-L4統合）">${integratedCellHtml(slot, layerKeys, activeLayerId)}</div>`;
   }
 
   function renderLayer(layer) {
@@ -772,13 +983,19 @@
     html.push('<div class="row" style="padding-left:calc(0.5 * var(--u))">');
     const w4 = [1.25, 1.25, 1.25, 2.25, 1.25, 2.75, 1, 1, 1, 1];
     for (let j = 0; j < 10; j++) html.push(rowKeyFix(r4[j], w4[j], slot++));
-    html.push(encHtml(r4[10], slot++));
+    if (toggleExtras.checked) {
+      html.push(encHtml(r4[10], slot++));
+    } else {
+      slot++;
+    }
     html.push("</div>");
 
-    html.push('<div class="row" style="margin-top:calc(0.25 * var(--u));align-items:center">');
-    html.push('<div class="sp" style="width:calc(3.25 * var(--u))"></div>');
-    html.push('<div class="key wide" style="width:calc(6.25 * var(--u));height:calc(0.82 * var(--u));min-height:calc(0.82 * var(--u));max-height:calc(0.82 * var(--u));opacity:0.88">スペースレール（スタビ）</div>');
-    html.push("</div>");
+    if (toggleExtras.checked) {
+      html.push('<div class="row" style="margin-top:calc(0.25 * var(--u));align-items:center">');
+      html.push('<div class="sp" style="width:calc(3.25 * var(--u))"></div>');
+      html.push('<div class="key wide" style="width:calc(6.25 * var(--u));height:calc(0.82 * var(--u));min-height:calc(0.82 * var(--u));max-height:calc(0.82 * var(--u));opacity:0.88">スペースレール（スタビ）</div>');
+      html.push("</div>");
+    }
 
     if (p !== getActiveKeys(layer).length || activeKeycodes.length !== getActiveKeys(layer).length || slot !== 61) {
       console.warn("L" + layer.id + " キー数/スロット: keys=" + getActiveKeys(layer).length + " codes=" + activeKeycodes.length + " p=" + p + " slot=" + slot);
@@ -789,13 +1006,103 @@
     encNote.textContent = "エンコーダ回転: " + layer.enc;
   }
 
+  function renderIntegratedL0toL4() {
+    const integratedLayers = INTEGRATED_LAYER_IDS.map(getLayerById).filter(Boolean);
+    const layerKeys = integratedLayers.map((layer) => getActiveKeys(layer));
+    if (layerKeys.length !== 5) return;
+    const activeLayerId = LAYERS[currentLayerIndex] ? LAYERS[currentLayerIndex].id : 0;
+    let slot = 0;
+    const html = [];
+
+    html.push('<div class="row" style="padding-left:calc(0.75 * var(--u))">');
+    for (let j = 0; j < 6; j++) html.push(rowKeyIntegrated(1, slot++, layerKeys, activeLayerId));
+    html.push('<div class="sp" style="width:calc(0.75 * var(--u))"></div>');
+    for (let j = 6; j < 11; j++) html.push(rowKeyIntegrated(1, slot++, layerKeys, activeLayerId));
+    html.push(rowKeyIntegrated(2, slot++, layerKeys, activeLayerId));
+    html.push("</div>");
+
+    html.push('<div class="row" style="padding-left:calc(0.15 * var(--u))">');
+    html.push(rowKeyIntegrated(1.5, slot++, layerKeys, activeLayerId));
+    html.push('<div class="sp" style="width:calc(0.1 * var(--u))"></div>');
+    for (let j = 1; j < 6; j++) html.push(rowKeyIntegrated(1, slot++, layerKeys, activeLayerId));
+    html.push('<div class="sp" style="width:calc(0.75 * var(--u))"></div>');
+    for (let j = 6; j < 12; j++) html.push(rowKeyIntegrated(1, slot++, layerKeys, activeLayerId));
+    html.push(rowKeyIntegrated(1.5, slot++, layerKeys, activeLayerId));
+    html.push("</div>");
+
+    html.push('<div class="row">');
+    html.push(rowKeyIntegrated(1.75, slot++, layerKeys, activeLayerId));
+    for (let j = 1; j < 6; j++) html.push(rowKeyIntegrated(1, slot++, layerKeys, activeLayerId));
+    html.push('<div class="sp" style="width:calc(0.75 * var(--u))"></div>');
+    for (let j = 6; j < 11; j++) html.push(rowKeyIntegrated(1, slot++, layerKeys, activeLayerId));
+    html.push(rowKeyIntegrated(2.25, slot++, layerKeys, activeLayerId));
+    html.push("</div>");
+
+    html.push('<div class="row">');
+    html.push(rowKeyIntegrated(1.75, slot++, layerKeys, activeLayerId));
+    for (let j = 1; j < 6; j++) html.push(rowKeyIntegrated(1, slot++, layerKeys, activeLayerId));
+    html.push('<div class="sp" style="width:calc(0.75 * var(--u))"></div>');
+    for (let j = 6; j < 12; j++) html.push(rowKeyIntegrated(1, slot++, layerKeys, activeLayerId));
+    html.push(rowKeyIntegrated(1.25, slot++, layerKeys, activeLayerId));
+    html.push("</div>");
+
+    const w4 = [1.25, 1.25, 1.25, 2.25, 1.25, 2.75, 1, 1, 1, 1];
+    html.push('<div class="row" style="padding-left:calc(0.5 * var(--u))">');
+    for (let j = 0; j < 10; j++) html.push(rowKeyIntegrated(w4[j], slot++, layerKeys, activeLayerId));
+    if (toggleExtras.checked) {
+      html.push(encIntegrated(slot++, layerKeys, activeLayerId));
+    } else {
+      slot++;
+    }
+    html.push("</div>");
+
+    if (toggleExtras.checked) {
+      html.push('<div class="row" style="margin-top:calc(0.25 * var(--u));align-items:center">');
+      html.push('<div class="sp" style="width:calc(3.25 * var(--u))"></div>');
+      html.push('<div class="key wide" style="width:calc(6.25 * var(--u));height:calc(0.82 * var(--u));min-height:calc(0.82 * var(--u));max-height:calc(0.82 * var(--u));opacity:0.88">スペースレール（スタビ）</div>');
+      html.push("</div>");
+    }
+
+    kb.innerHTML = html.join("");
+    desc.textContent = "一覧表示（中央=L0 / 左上=L1 / 右上=L2 / 右下=L3 / 左下=L4）";
+    encNote.textContent = toggleExtras.checked
+      ? "一覧表示: L0-L4 を同時表示（スペースレール + Enc を表示中、スロット番号・keycode は非表示）"
+      : "一覧表示: L0-L4 を同時表示（スペースレール + Enc は非表示、スロット番号・keycode は非表示）";
+  }
+
   function syncBadgeVisibility() {
+    if (currentViewMode === VIEW_MODE_INTEGRATED) {
+      kbWrap.classList.add("kb-wrap--hide-slots");
+      kbWrap.classList.add("kb-wrap--hide-codes");
+      return;
+    }
     kbWrap.classList.toggle("kb-wrap--hide-slots", !toggleSlots.checked);
     kbWrap.classList.toggle("kb-wrap--hide-codes", !toggleCodes.checked);
   }
 
+  function renderCurrentMode() {
+    if (currentViewMode === VIEW_MODE_INTEGRATED) {
+      renderIntegratedL0toL4();
+    } else {
+      renderLayer(LAYERS[currentLayerIndex]);
+    }
+    syncBadgeVisibility();
+  }
+
+  function setViewMode(mode) {
+    currentViewMode = mode;
+    const integrated = mode === VIEW_MODE_INTEGRATED;
+    viewSingle.classList.toggle("active", !integrated);
+    viewSingle.setAttribute("aria-selected", integrated ? "false" : "true");
+    viewIntegrated.classList.toggle("active", integrated);
+    viewIntegrated.setAttribute("aria-selected", integrated ? "true" : "false");
+    kbWrap.classList.toggle("kb-wrap--integrated", integrated);
+    renderCurrentMode();
+  }
+
   toggleSlots.addEventListener("change", syncBadgeVisibility);
   toggleCodes.addEventListener("change", syncBadgeVisibility);
+  toggleExtras.addEventListener("change", renderCurrentMode);
   syncBadgeVisibility();
 
   [legendUs, legendJis].forEach(function (el) {
@@ -803,9 +1110,15 @@
       try {
         localStorage.setItem(LEGEND_STORAGE_KEY, getLegendMode());
       } catch (ignore) {}
-      renderLayer(LAYERS[currentLayerIndex]);
-      syncBadgeVisibility();
+      renderCurrentMode();
     });
+  });
+
+  viewSingle.addEventListener("click", function () {
+    setViewMode(VIEW_MODE_SINGLE);
+  });
+  viewIntegrated.addEventListener("click", function () {
+    setViewMode(VIEW_MODE_INTEGRATED);
   });
 
   /** `Layer 0 — BASE` → `BASE`（`name` に — が無ければ全文） */
@@ -838,13 +1151,12 @@
         x.classList.toggle("active", j === idx);
         x.setAttribute("aria-selected", j === idx ? "true" : "false");
       });
-      renderLayer(layer);
-      syncBadgeVisibility();
+      renderCurrentMode();
     });
     tabs.appendChild(b);
   });
 
-  renderLayer(LAYERS[0]);
+  setViewMode(VIEW_MODE_INTEGRATED);
 })();
   </script>
 </body>
