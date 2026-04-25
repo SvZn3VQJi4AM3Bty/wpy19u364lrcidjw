@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
+  <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
+  <meta name="referrer" content="no-referrer" />
+  <title>カスタムキーマップ（OLSK60_v2）</title>
+  <style>
+    :root {
+      --u: 54px;
+      --gap: 4px;
+      --key-h: 0.88;
+      --c-base: #e8eaed;
+      --c-mod: #cfd4dc;
+      --c-thumb: #c5ccd8;
+      --c-nav: #b8c0d0;
+      --c-wide: #dde1e8;
+      --c-trns: #a8b4c4;
+      --c-no: #6b7280;
+      --c-dual: #cfe8fc;
+    }
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: #1a1d23;
+      color: #e8eaed;
+      padding: 1.5rem;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    h1 { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.35rem; }
+    h2 { font-size: 1rem; margin: 1.25rem 0 0.5rem; color: #c8d0dc; }
+    p.meta { font-size: 0.8rem; color: #9aa3b2; margin: 0 0 0.75rem; line-height: 1.55; }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem 1rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.8rem;
+      color: #b8c0cc;
+    }
+    .controls label { cursor: pointer; user-select: none; }
+    /** ホスト配列（US/JIS）：スロット・keycode 行とレイヤータブのあいだの独立行 */
+    .legend-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.35rem 0.75rem;
+      margin: 0 0 0.75rem 0;
+      padding: 0;
+      font-size: 0.8rem;
+      color: #b8c0cc;
+    }
+    .legend-row label { cursor: pointer; user-select: none; }
+    .legend-toggle {
+      display: inline-flex;
+      flex-wrap: nowrap;
+      align-items: center;
+      gap: 0.35rem 0.75rem;
+      margin: 0;
+      padding: 0;
+    }
+    .legend-group-label {
+      margin: 0 0.1rem 0 0;
+      font-weight: inherit;
+      color: inherit;
+      white-space: nowrap;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+    .toolbar button {
+      background: #2d3542;
+      border: 1px solid #4a5568;
+      color: #e8eaed;
+      padding: 0.45rem 0.75rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .toolbar button:hover { background: #3d4654; }
+    .toolbar button.active {
+      background: #3b82f6;
+      border-color: #60a5fa;
+    }
+    /** レイヤータブ: 1行目 Ln（最小） / 2行目 短名（中） — いずれも従来の単行ボタン文字より小さく */
+    .toolbar button.layer-tab {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.18;
+      gap: 0.06rem;
+      min-width: 3.35rem;
+      text-align: center;
+    }
+    .toolbar button.layer-tab .layer-tab__num {
+      font-size: 0.58rem;
+      font-weight: 500;
+      color: #9aa3b2;
+      letter-spacing: 0.02em;
+    }
+    .toolbar button.layer-tab .layer-tab__name {
+      font-size: 0.68rem;
+      font-weight: 400;
+      color: #e8eaed;
+    }
+    .toolbar button.layer-tab.active .layer-tab__num {
+      color: rgba(255, 255, 255, 0.88);
+    }
+    .toolbar button.layer-tab.active .layer-tab__name {
+      color: #fff;
+    }
+    .layer-title {
+      font-size: 0.95rem;
+      margin-bottom: 0.6rem;
+      color: #c8d0dc;
+    }
+    /**
+     * キー配列の可視化ブロックのみ拡大（凡例以降の details.doc より視認性を上げる）
+     * --u を上げるとキー・エンコーダ・スタビ行の寸法がまとめてスケールする
+     */
+    .kb-viz-region {
+      --u: 64px;
+      --gap: 5px;
+      margin-bottom: 0.25rem;
+    }
+    .kb-viz-region h1 {
+      font-size: 1.35rem;
+    }
+    .kb-viz-region p.meta {
+      font-size: 0.88rem;
+    }
+    .kb-viz-region .controls,
+    .kb-viz-region .legend-row {
+      font-size: 0.88rem;
+    }
+    .kb-viz-region .toolbar button {
+      font-size: 0.88rem;
+      padding: 0.5rem 0.85rem;
+    }
+    .kb-viz-region .toolbar button.layer-tab .layer-tab__num {
+      font-size: 0.62rem;
+    }
+    .kb-viz-region .toolbar button.layer-tab .layer-tab__name {
+      font-size: 0.76rem;
+    }
+    .kb-viz-region .layer-title {
+      font-size: 1.05rem;
+    }
+    .kb-viz-region .enc-note {
+      font-size: 0.82rem;
+    }
+    .kb-viz-region .slot-badge {
+      font-size: 10px;
+    }
+    .kb-wrap { position: relative; }
+    .kb-wrap.kb-wrap--hide-slots .slot-badge { display: none; }
+    .kb-wrap.kb-wrap--hide-codes .code-badge { display: none; }
+    .kb { display: flex; flex-direction: column; gap: var(--gap); }
+    /* 縦は揃え：親指行でエンコーダが高さを食わないよう center */
+    .kb .row {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+    .sp { flex: 0 0 auto; }
+    .key {
+      position: relative;
+      flex: 0 0 auto;
+      box-sizing: border-box;
+      height: calc(var(--u) * var(--key-h));
+      min-height: calc(var(--u) * var(--key-h));
+      max-height: calc(var(--u) * var(--key-h));
+      border: 1px solid #3d4450;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 0.7rem;
+      line-height: 1.2;
+      padding: 11px 4px 5px;
+      background: var(--c-base);
+      color: #1a1d23;
+      overflow: hidden;
+      word-break: break-word;
+    }
+    /* タップ＋ホールド2行: 高さは通常キーと同じ。文字サイズは .key と同じ 0.7rem（はみ出しは overflow でクリップ） */
+    .key.dual {
+      background: var(--c-dual);
+      line-height: 1.2;
+      padding: 11px 4px 5px;
+    }
+    .slot-badge {
+      position: absolute;
+      top: 2px;
+      left: 4px;
+      font-size: 9px;
+      font-family: ui-monospace, monospace;
+      color: #475569;
+      font-weight: 600;
+      line-height: 1;
+    }
+    .code-badge {
+      position: absolute;
+      top: 2px;
+      right: 4px;
+      max-width: calc(100% - 28px);
+      font-size: 9px;
+      font-family: ui-monospace, monospace;
+      color: #64748b;
+      font-weight: 600;
+      line-height: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: right;
+    }
+    /*
+     * スロット番号を消して keycode だけ見たい時は、
+     * 省略をやめて改行しながら全文を表示する。
+     */
+    .kb-wrap.kb-wrap--hide-slots:not(.kb-wrap--hide-codes) .code-badge {
+      left: 4px;
+      right: 4px;
+      max-width: calc(100% - 8px);
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      text-overflow: clip;
+      line-height: 1.08;
+      text-align: left;
+    }
+    .key.mod { background: var(--c-mod); font-size: 0.64rem; }
+    .key.thumb { background: var(--c-thumb); font-size: 0.64rem; }
+    .key.nav { background: var(--c-nav); font-size: 0.64rem; }
+    .key.wide { background: var(--c-wide); font-size: 0.62rem; }
+    .key.trns { background: var(--c-trns); color: #1e293b; font-size: 0.64rem; }
+    .key.no { background: var(--c-no); color: #e5e7eb; font-size: 0.64rem; }
+    .encoder {
+      position: relative;
+      flex: 0 0 auto;
+      width: calc(var(--u) * var(--key-h));
+      height: calc(var(--u) * var(--key-h));
+      min-width: calc(var(--u) * var(--key-h));
+      min-height: calc(var(--u) * var(--key-h));
+      border: 1px dashed #5c6570;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.64rem;
+      color: #9aa3b2;
+      margin-left: calc(var(--u) * 0.2);
+      padding-top: 10px;
+      box-sizing: border-box;
+    }
+    .encoder .slot-badge { left: 50%; transform: translateX(-50%); top: 4px; }
+    details.doc {
+      margin-top: 1.25rem;
+      background: #222831;
+      border: 1px solid #3d4450;
+      border-radius: 8px;
+      padding: 0.5rem 1rem 1rem;
+    }
+    details.doc > summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: #94a3b8;
+      padding: 0.35rem 0;
+    }
+    details.doc table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+      margin: 0.5rem 0;
+    }
+    details.doc th, details.doc td {
+      border: 1px solid #3d4450;
+      padding: 0.35rem 0.5rem;
+      text-align: left;
+    }
+    details.doc th { background: #2a3140; color: #cbd5e1; }
+    details.doc ul { margin: 0.4rem 0; padding-left: 1.25rem; font-size: 0.82rem; line-height: 1.55; color: #b8c4d4; }
+    details.doc p { font-size: 0.82rem; line-height: 1.55; color: #b8c4d4; margin: 0.4rem 0; }
+    footer.tech {
+      margin-top: 1rem;
+      font-size: 0.72rem;
+      color: #7d8694;
+      line-height: 1.55;
+    }
+    .enc-note { font-size: 0.75rem; color: #8b95a5; margin-top: 0.5rem; }
+    code { background: #2a3038; padding: 0.1em 0.35em; border-radius: 4px; font-size: 0.85em; }
+  </style>
+</head>
+<body>
+  <section class="kb-viz-region" aria-label="キーマップ可視化">
+  <h1>カスタムキーマップ（OLSK60_v2）</h1>
+  <p class="meta">ソース: <code>keymaps/default/keymap.c</code>（<code>LAYOUT</code> 引数順）</p>
+
+  <div class="controls">
+    <label><input type="checkbox" id="toggle-slots" checked /> スロット番号（#0〜#60）を表示</label>
+    <label><input type="checkbox" id="toggle-codes" checked /> keycodeを表示</label>
+  </div>
+
+  <div class="legend-row">
+    <div class="legend-toggle" role="radiogroup" aria-label="ホスト配列（US / JIS）">
+      <span class="legend-group-label">ホスト配列：</span>
+      <label><input type="radio" name="legend" id="legend-jis" value="jis" checked /> JIS</label>
+      <label><input type="radio" name="legend" id="legend-us" value="us" /> US</label>
+    </div>
+  </div>
+
+  <div class="toolbar" id="layer-tabs" role="tablist" aria-label="レイヤー選択"></div>
+  <div class="layer-title" id="layer-desc"></div>
+
+  <div class="kb-wrap" id="kb-wrap">
+    <div class="kb" id="kb" aria-live="polite"></div>
+  </div>
+  <p class="enc-note" id="enc-note"></p>
+  </section>
+
+  <details class="doc" open>
+    <summary>凡例・レイヤー概要・エンコーダ・修正依頼のしかた</summary>
+
+    <h2>凡例（表記の統一）</h2>
+    <table>
+      <tr><th>表示</th><th>意味</th></tr>
+      <tr><td><code>▽</code></td><td><code>KC_TRNS</code>（下位レイヤーを透過）</td></tr>
+      <tr><td><code>·</code></td><td><code>KC_NO</code>（無割当）</td></tr>
+      <tr><td><code>LCtrl+Z</code> など</td><td>左 Ctrl とキーの同時押し（従来の C+ を統合）</td></tr>
+      <tr><td><code>LShift+Z</code></td><td>左 Shift とキーの同時押し</td></tr>
+      <tr><td><code>LGui+Z</code></td><td>左 Gui（Windows）とキーの同時押し</td></tr>
+      <tr><td><code>LAlt+Z</code> / <code>RAlt+Z</code></td><td>左または右 Alt</td></tr>
+      <tr><td>水色の2行キー</td><td><strong>上段＝タップ</strong>、<strong>下段＝長押し</strong>（<code>LT</code> / <code>MT</code> など）</td></tr>
+    </table>
+    <p>物理段のキー数（<code>LAYOUT</code> 引数）: 段1=12 / 段2=13 / 段3=12 / 段4=13 / 段5=10キー＋エンコーダ押下（計61スロット #0〜#60）。</p>
+
+    <h2>レイヤー概要</h2>
+    <p>各レイヤーへの入り方は、ページ上部のキーマップ（<code>L1</code>〜<code>L8</code> の2行キーなど）を参照してください。</p>
+    <table>
+      <tr><th>L</th><th>名前</th><th>用途</th><th>LED（最前面時・参考）</th></tr>
+      <tr><td>0</td><td><code>L_BASE</code>（BASE）</td><td>通常のキー入力（ルートレイヤー）</td><td>白に近い無彩色（<code>rgblight_sethsv(0, 0, 13)</code>）</td></tr>
+      <tr><td>1</td><td><code>L_NAV</code>（NAV）</td><td>ウィンドウ操作・メディア・マウスホイール等</td><td>水色（H=120）</td></tr>
+      <tr><td>2</td><td><code>L_SYM</code>（SYM）</td><td>記号・テンキー・マクロ</td><td>緑（H=85）</td></tr>
+      <tr><td>3</td><td><code>L_ADJ</code>（ADJ）</td><td>編集・カーソル・削除系</td><td>橙（H=43）</td></tr>
+      <tr><td>4</td><td><code>L_ADJ_NAV</code>（ADJ_NAV）</td><td>Ctrl 系の拡張ショートカット</td><td>橙（H=43・ADJ と同系）</td></tr>
+      <tr><td>5</td><td><code>L_CTRL_NUM</code>（CTRL_NUM）</td><td>Ctrl+数字のショートカット</td><td>青（H=180）</td></tr>
+      <tr><td>6</td><td><code>L_GUI_NUM</code>（GUI_NUM）</td><td>Gui+数字のショートカット</td><td>青紫（H=200）</td></tr>
+      <tr><td>7</td><td><code>L_ALT_NUM</code>（ALT_NUM）</td><td>Alt+数字のショートカット</td><td>紫（H=220）</td></tr>
+      <tr><td>8</td><td><code>L_DANGER</code>（DANGER）</td><td>EEPROM クリア・マウス速度・音声など（誤操作に注意）</td><td>赤（H=0・S&gt;0）</td></tr>
+    </table>
+    <p>LED は <code>layer_state_set_user</code> で<strong>最前面レイヤー</strong>に応じて <code>rgblight_sethsv</code> しています。上表の H は色相（0〜255 スケール）。</p>
+
+    <h2>エンコーダ回転（<code>ENCODER_MAP_ENABLE</code> 時）</h2>
+    <table>
+      <tr><th>レイヤー</th><th>時計回り</th><th>反時計回り</th></tr>
+      <tr><td>0, 2, 8</td><td>Vol+</td><td>Vol−</td></tr>
+      <tr><td>1, 3, 4</td><td>PgUp</td><td>PgDn</td></tr>
+      <tr><td>5, 6, 7</td><td>·</td><td>·</td></tr>
+    </table>
+
+    <h2>Key Override</h2>
+    <p><code>keymap.c</code> の <code>key_overrides</code> による割り当て:</p>
+    <ul>
+      <li><strong>LAlt 押下中</strong>にスペース（<code>LT(L_SYM, KC_SPC)</code>）を押す → <strong>Alt+Tab</strong></li>
+      <li><strong>LShift 押下中</strong>に変換（<code>LT(L_ADJ, KC_LNG1)</code>）のタップを押す → <strong>F14</strong></li>
+    </ul>
+
+    <h2>AIへキーマップ修正を指示する方法</h2>
+    <p>次の方法のいずれかで指定することが推奨です。</p>
+    <ul>
+      <li><strong>スロット番号</strong> … 画面上の <code>#37</code> のように出ている番号で「<strong>レイヤー2のスロット37を KC_XXX に</strong>」と書く（<code>keymap.c</code> の <code>LAYOUT</code> 引数の並びと一致）。</li>
+      <li><strong>レイヤー + 見た目位置</strong> … 「<strong>L1 を表示した状態で、Q の位置</strong>」「<strong>一番下の列の矢印の左</strong>」など。</li>
+      <li><strong>いまのラベル</strong> … 「<strong>BkTab になっているキーを ○○ に</strong>」。</li>
+    </ul>
+    <p>複数キーは箇条書きにすると安全です。カスタムキー（<code>enum custom_keycodes</code>）を増やす場合は、その旨も書いてください。</p>
+
+    <h2>メンテナンス</h2>
+    <p>表示ラベルの揃え先は <code>keymap_us_jis_label_mapping_template.md</code> の <strong>US ラベル</strong>列（物理スロット＝<code>keymap.c</code>の<code>LAYOUT</code>順）です。<code>keymap.c</code> を変えたら、まず <code>keymap_us_jis_label_mapping_template.md</code> の US/JIS を直し、続けてこの HTML の <code>LAYERS</code> の <code>keys</code>（US 表記）に反映してください。スロット番号は HTML 内で整合します。<strong>JIS</strong> は <code>toJisLabel()</code> により US から表示変換（差分は <code>JIS_LABEL_MAP</code> 等。表示のみ・ファーム無関係）。<code>layer_state_set_user</code> の LED を変えたら、レイヤー概要表の「LED」列も合わせてください。</p>
+  </details>
+
+  <footer class="tech">
+    <strong>M3</strong> … <code>MB3_SCROLL_KEY</code>（中央ボタンでスクロール）。<strong>L1〜L8</strong> … <code>LT(n,…)</code> の略。<br />
+    ソース: <code>keymap.c</code> の <code>keymaps</code> / <code>encoder_map</code> / <code>layer_state_set_user</code>
+  </footer>
+
+  <script>
+(function () {
+  /** 61 要素: LAYOUT 引数順（#0〜#59 = キー、#60 = エンコーダ押下） */
+  const LAYERS = [
+    {
+      id: 0,
+      name: "Layer 0 — BASE",
+      enc: "Vol±（時計回り Vol+ / 反時計回り Vol−）",
+      keys: [
+        "LCtrl","Q","W","E","R","T","Y","U","I","O","P","LShift",
+        "Esc","F","S","D","A","G","H","N","M","K","-","]\nL5",
+        "·\nL8",
+        "LGui","Z","X","C","V","B","J","L",",",".","?\nL7","\\\nL6",
+        "Enter","F15","F16",
+        "Tab\nLAlt",
+        "無変換\nLShift",
+        "/\nL1",
+        "Space\nL2",
+        "変換\nL3",
+        "·","LShift + Tab","Tab","↑","LCtrl",
+        "LCtrl + Enter","F17","F18","M1","M3","M2","RAlt","←","↓","→","Enc"
+      ]
+    },
+    {
+      id: 1,
+      name: "Layer 1 — NAV",
+      enc: "PgUp / PgDn",
+      keys: [
+        "▽","LGui + ↓","LGui + ←","LShift + LGui + ←","LGui + →","LGui + ↑","LCtrl + LShift + Tab","LCtrl + Tab","WH↑","BkTab","LAlt + Shift + PScr","▽",
+        "LCtrl + LShift + P","LCtrl + H","LGui + LShift + S","M1","M3","M2","LCtrl + /","WH←","WH↓","WH→","Bright-","Bright+","▽",
+        "▽","F15","F16","F17","F18","ScrollBoost","Play/Pause","Prev","Next","Mute","Vol-","Vol+",
+        "·","·","·","·","·","▽","LAlt + Enter","LCtrl + Enter\nL4","·","▽","▽","▽","▽",
+        "·","·","·","▽","▽","▽","▽","▽","▽","▽","Enc"
+      ]
+    },
+    {
+      id: 2,
+      name: "Layer 2 — SYM",
+      enc: "Vol±",
+      keys: [
+        "▽","KP0","KP1","KP2","KP3","( )","{","&","@","!","$","▽",
+        "F5",":","KP4","KP5","KP6","[ ]","LShift + INT1","'",";","[","\"","*","▽",
+        "▽","=","KP7","KP8","KP9","{ }","+","#","^","%","LShift + INT3","(",
+        "·","·","·","LShift + Tab","F13","INT1","▽","·","·","▽","▽","▽","▽",
+        "·","·","·","▽","▽","▽","▽","▽","▽","▽","Enc"
+      ]
+    },
+    {
+      id: 3,
+      name: "Layer 3 — ADJ",
+      enc: "PgUp / PgDn",
+      keys: [
+        "▽","LShift + F10","LCtrl + W","LCtrl + E","LCtrl + R","LCtrl + T","LAlt + ←","LAlt + →","↑","Backspace","Delete","▽",
+        "F6","LCtrl + F","LCtrl + S","LCtrl + D","LCtrl + A","LCtrl + G","Home","←","↓","→","F10","F7","▽",
+        "F12","LCtrl + Z","LCtrl + X","LCtrl + C","LCtrl + V","LCtrl + B","End","PgUp","PgDn","F4","F11","F2",
+        "·","·","·","LAlt","Enter\nLShift","LShift + Enter","Enter","▽","·","▽","▽","▽","▽",
+        "·","·","·","LCtrl + Btn1","M3","LCtrl + Btn2","▽","▽","▽","▽","Enc"
+      ]
+    },
+    {
+      id: 4,
+      name: "Layer 4 — ADJ_NAV",
+      enc: "PgUp / PgDn",
+      keys: [
+        "▽","F19","F20","F21","F22","F23","LCtrl + Y","LCtrl + U","LCtrl + I","LCtrl + O","LCtrl + P","▽",
+        "LCtrl + LShift + Esc","F24","RAlt + Space","LCtrl + Btn1","LShift + Btn1","LShift + Btn2","LCtrl + H","LCtrl + N","LCtrl + M","LCtrl + K","LCtrl + -","LCtrl + ]","·",
+        "LCtrl + LGui","F1","F3","F8","F9","NumLock","LCtrl + J","LCtrl + L","LCtrl + ,","LCtrl + .","LCtrl + ?","LCtrl + \\",
+        "·","·","·","·","·","·","·","·","·","·","·","·","·",
+        "·","·","·","·","·","·","·","·","·","·","Enc"
+      ]
+    },
+    {
+      id: 5,
+      name: "Layer 5 — CTRL_NUM",
+      enc: "· / ·",
+      keys: [
+        "·","LCtrl + 0","LCtrl + 1","LCtrl + 2","LCtrl + 3","·","·","·","·","·","·","·",
+        "·","·","LCtrl + 4","LCtrl + 5","LCtrl + 6","·","·","·","·","·","·","·","·",
+        "·","·","LCtrl + 7","LCtrl + 8","LCtrl + 9","·","·","·","·","·","·","·",
+        "·","·","·","·","·","·","·","·","·","·","·","·","·",
+        "·","·","·","·","·","·","·","·","·","·","Enc"
+      ]
+    },
+    {
+      id: 6,
+      name: "Layer 6 — GUI_NUM",
+      enc: "· / ·",
+      keys: [
+        "·","LGui + 0","LGui + 1","LGui + 2","LGui + 3","·","·","·","·","·","·","·",
+        "·","·","LGui + 4","LGui + 5","LGui + 6","·","·","·","·","·","·","·","·",
+        "·","·","LGui + 7","LGui + 8","LGui + 9","·","·","·","·","·","·","·",
+        "·","·","·","·","·","·","·","·","·","·","·","·","·",
+        "·","·","·","·","·","·","·","·","·","·","Enc"
+      ]
+    },
+    {
+      id: 7,
+      name: "Layer 7 — ALT_NUM",
+      enc: "· / ·",
+      keys: [
+        "·","LAlt + 0","LAlt + 1","LAlt + 2","LAlt + 3","·","·","·","·","·","·","·",
+        "·","·","LAlt + 4","LAlt + 5","LAlt + 6","·","·","·","·","·","·","·","·",
+        "·","·","LAlt + 7","LAlt + 8","LAlt + 9","·","·","·","·","·","·","·",
+        "·","·","·","·","·","·","·","·","·","·","·","·","·",
+        "·","·","·","·","·","·","·","·","·","·","Enc"
+      ]
+    },
+    {
+      id: 8,
+      name: "Layer 8 — DANGER",
+      enc: "Vol±",
+      keys: [
+        "EepromClr","Spd1","Spd2","Spd3","Spd4","Spd5","·","·","·","·","·","·",
+        "·","Spd+","Spd-","Smt+","Smt-","·","·","·","·","·","·","·","·",
+        "·","Acc+","Acc-","Dec+","Dec-","·","·","·","·","·","·","·",
+        "·","Snd","·","·","·","·","·","·","·","·","·","·","·",
+        "·","·","·","·","·","·","·","·","·","·","Enc"
+      ]
+    }
+  ];
+
+  const LAYER_KEYCODES = [["KC_LCTL", "KC_Q", "KC_W", "KC_E", "KC_R", "KC_T", "KC_Y", "KC_U", "KC_I", "KC_O", "KC_P", "KC_LSFT", "KC_ESC", "KC_F", "KC_S", "KC_D", "KC_A", "KC_G", "KC_H", "KC_N", "KC_M", "KC_K", "KC_MINS", "LT(L_CTRL_NUM, KC_RBRC)", "LT(L_DANGER, KC_NO)", "KC_LGUI", "KC_Z", "KC_X", "KC_C", "KC_V", "KC_B", "KC_J", "KC_L", "KC_COMM", "KC_DOT", "ALT_NUM_QUES", "LT(L_GUI_NUM, KC_BSLS)", "KC_ENT", "KC_F15", "KC_F16", "MT(MOD_LALT, KC_TAB)", "MT(MOD_LSFT, KC_LNG2)", "LT(L_NAV, KC_SLSH)", "LT(L_SYM, KC_SPC)", "LT(L_ADJ, KC_LNG1)", "KC_NO", "LSFT(KC_TAB)", "KC_TAB", "KC_UP", "KC_LCTL", "C(KC_ENT)", "KC_F17", "KC_F18", "KC_MS_BTN1", "MB3_SCROLL_KEY", "KC_MS_BTN2", "KC_RALT", "KC_LEFT", "KC_DOWN", "KC_RGHT", "KC_NO"], ["KC_TRNS", "G(KC_DOWN)", "G(KC_LEFT)", "S(G(KC_LEFT))", "G(KC_RIGHT)", "G(KC_UP)", "C(S(KC_TAB))", "C(KC_TAB)", "KC_MS_WH_UP", "MACRO_BACK_NEWTAB", "NAV_ALT_PSCR", "KC_TRNS", "C(S(KC_P))", "C(KC_H)", "G(S(KC_S))", "KC_MS_BTN1", "KC_MS_BTN3", "KC_MS_BTN2", "C(KC_SLSH)", "KC_MS_WH_LEFT", "KC_MS_WH_DOWN", "KC_MS_WH_RIGHT", "KC_BRID", "KC_BRIU", "KC_TRNS", "KC_TRNS", "KC_F15", "KC_F16", "KC_F17", "KC_F18", "SCROLL_BOOST_KEY", "KC_MPLY", "KC_MPRV", "KC_MNXT", "KC_MUTE", "KC_VOLD", "KC_VOLU", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_TRNS", "NAV_ALT_ENTER", "ADJ_NAV_CTRL_ENT", "KC_NO", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_NO", "KC_NO", "KC_NO", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_NO"], ["KC_TRNS", "KC_KP_0", "KC_KP_1", "KC_KP_2", "KC_KP_3", "MACRO_PAREN", "S(KC_LBRC)", "S(KC_7)", "S(KC_2)", "S(KC_1)", "S(KC_4)", "KC_TRNS", "KC_F5", "S(KC_SCLN)", "KC_KP_4", "KC_KP_5", "KC_KP_6", "MACRO_SQUARE", "S(KC_INT1)", "KC_QUOT", "KC_SCLN", "KC_LBRC", "S(KC_QUOT)", "S(KC_8)", "KC_TRNS", "KC_TRNS", "KC_EQL", "KC_KP_7", "KC_KP_8", "KC_KP_9", "MACRO_CURLY", "S(KC_EQL)", "S(KC_3)", "S(KC_6)", "S(KC_5)", "S(KC_INT3)", "S(KC_9)", "KC_NO", "KC_NO", "KC_NO", "LSFT(KC_TAB)", "KC_F13", "KC_INT1", "KC_TRNS", "KC_NO", "KC_NO", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_NO", "KC_NO", "KC_NO", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_NO"], ["KC_TRNS", "S(KC_F10)", "C(KC_W)", "C(KC_E)", "C(KC_R)", "C(KC_T)", "LALT(KC_LEFT)", "LALT(KC_RGHT)", "KC_UP", "KC_BSPC", "KC_DEL", "KC_TRNS", "KC_F6", "C(KC_F)", "C(KC_S)", "C(KC_D)", "C(KC_A)", "C(KC_G)", "KC_HOME", "KC_LEFT", "KC_DOWN", "KC_RGHT", "KC_F10", "KC_F7", "KC_TRNS", "KC_F12", "C(KC_Z)", "C(KC_X)", "C(KC_C)", "C(KC_V)", "C(KC_B)", "KC_END", "KC_PGUP", "KC_PGDN", "KC_F4", "KC_F11", "KC_F2", "KC_NO", "KC_NO", "KC_NO", "KC_LALT", "MT(MOD_LSFT, KC_ENT)", "LSFT(KC_ENT)", "KC_ENT", "KC_TRNS", "KC_NO", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_NO", "KC_NO", "KC_NO", "LCTL_MS_BTN1_KEY", "KC_MS_BTN3", "LCTL_MS_BTN2_KEY", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_TRNS", "KC_NO"], ["KC_TRNS", "KC_F19", "KC_F20", "KC_F21", "KC_F22", "KC_F23", "C(KC_Y)", "C(KC_U)", "C(KC_I)", "C(KC_O)", "C(KC_P)", "KC_TRNS", "C(S(KC_ESC))", "KC_F24", "RALT(KC_SPC)", "LCTL_MS_BTN1_KEY", "LSFT_MS_BTN1_KEY", "LSFT_MS_BTN2_KEY", "C(KC_H)", "C(KC_N)", "C(KC_M)", "C(KC_K)", "C(KC_MINS)", "C(KC_RBRC)", "KC_NO", "C(KC_LGUI)", "KC_F1", "KC_F3", "KC_F8", "KC_F9", "KC_NUM", "C(KC_J)", "C(KC_L)", "C(KC_COMM)", "C(KC_DOT)", "C(KC_QUES)", "C(KC_BSLS)", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO"], ["KC_NO", "C(KC_0)", "C(KC_1)", "C(KC_2)", "C(KC_3)", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "C(KC_4)", "C(KC_5)", "C(KC_6)", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "C(KC_7)", "C(KC_8)", "C(KC_9)", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO"], ["KC_NO", "G(KC_0)", "G(KC_1)", "G(KC_2)", "G(KC_3)", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "G(KC_4)", "G(KC_5)", "G(KC_6)", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "G(KC_7)", "G(KC_8)", "G(KC_9)", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO"], ["KC_NO", "LALT(KC_0)", "LALT(KC_1)", "LALT(KC_2)", "LALT(KC_3)", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "LALT(KC_4)", "LALT(KC_5)", "LALT(KC_6)", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "LALT(KC_7)", "LALT(KC_8)", "LALT(KC_9)", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO"], ["EE_CLR", "SPEED_LEVEL_1_KEY", "SPEED_LEVEL_2_KEY", "SPEED_LEVEL_3_KEY", "SPEED_LEVEL_4_KEY", "SPEED_LEVEL_5_KEY", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "SPEED_UP_KEY", "SPEED_DOWN_KEY", "SMOOTH_UP_KEY", "SMOOTH_DOWN_KEY", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "ACCEL_UP_KEY", "ACCEL_DOWN_KEY", "DECEL_UP_KEY", "DECEL_DOWN_KEY", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "ALL_SOUND_TOGGLE", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO"]];
+
+  const JIS_LABEL_MAP = {
+  "\\": "]",
+  "=": "^",
+  "[": "@",
+  "'": ":",
+  "]": "[",
+  "LCtrl + \\": "LCtrl + ]",
+  "LCtrl + ]": "LCtrl + [",
+  "] / L5": "[ / L5",
+  "\\ / L6": "] / L6",
+  "@": "\"",
+  "^": "&",
+  "&": "'",
+  "*": "(",
+  "(": ")",
+  "+": "~",
+  "LShift + INT1": "_",
+  "LShift+INT1": "_",
+  "LShift + INT3": "|",
+  "LShift+INT3": "|",
+  "INT1": "\\",
+  "INT3": "￥",
+  "{": "`",
+  "\"": "*",
+  ":": "+"
+};
+
+  const JIS_KEY_TOKEN_MAP = {
+    "\\": "]",
+    "]": "[",
+    "[": "@",
+    "'": ":",
+    "=": "^",
+    "INT1": "\\",
+    "INT3": "￥"
+  };
+
+  // US 表示でも、LShift+記号キーは結果1文字で見せる（可読性重視）
+  const US_SHIFT_RESULT_MAP = {
+    "1": "!",
+    "2": "@",
+    "3": "#",
+    "4": "$",
+    "5": "%",
+    "6": "^",
+    "7": "&",
+    "8": "*",
+    "9": "(",
+    "0": ")",
+    "-": "_",
+    "=": "+",
+    "[": "{",
+    "]": "}",
+    "\\": "|",
+    ";": ":",
+    "'": "\"",
+    ",": "<",
+    ".": ">",
+    "/": "?"
+  };
+
+  // LShift + 記号キーのうち、JIS 表示では結果1文字に寄せる対象
+  const JIS_SHIFT_RESULT_MAP = {
+    "1": "!",
+    "2": "\"",
+    "3": "#",
+    "4": "$",
+    "5": "%",
+    "6": "&",
+    "7": "'",
+    "8": "(",
+    "9": ")",
+    "0": "",
+    "-": "=",
+    "=": "~",
+    "[": "`",
+    "]": "{",
+    "\\": "|",
+    ";": "+",
+    "'": "*",
+    ",": "<",
+    ".": ">",
+    "/": "?",
+    "INT1": "_",
+    "INT3": "|"
+  };
+
+  function toUsLabel(us) {
+    const parts = us.split("\n");
+    return parts.map((part) => {
+      const compact = part.replace(/\s*\+\s*/g, "+");
+      const shiftOnly = compact.match(/^LShift\+(.+)$/);
+      if (shiftOnly && US_SHIFT_RESULT_MAP[shiftOnly[1]] !== undefined) {
+        return US_SHIFT_RESULT_MAP[shiftOnly[1]];
+      }
+      return part;
+    }).join("\n");
+  }
+
+  const kb = document.getElementById("kb");
+  const kbWrap = document.getElementById("kb-wrap");
+  const tabs = document.getElementById("layer-tabs");
+  const desc = document.getElementById("layer-desc");
+  const encNote = document.getElementById("enc-note");
+  const toggleSlots = document.getElementById("toggle-slots");
+  const toggleCodes = document.getElementById("toggle-codes");
+  const legendUs = document.getElementById("legend-us");
+  const legendJis = document.getElementById("legend-jis");
+
+  const LEGEND_STORAGE_KEY = "olsk60_keymap_legend_mode";
+  let currentLayerIndex = 0;
+  let activeKeycodes = [];
+
+  try {
+    if (localStorage.getItem(LEGEND_STORAGE_KEY) === "jis") {
+      legendJis.checked = true;
+      legendUs.checked = false;
+    }
+  } catch (ignore) {}
+
+  /** US ラベル（LAYERS[].keys が正）→ JIS 環境向けの見かけ（表示のみ・ファームと無関係） */
+  function toJisLabel(us) {
+    const parts = us.split("\n");
+    return parts.map((part) => {
+      if (JIS_LABEL_MAP[part]) return JIS_LABEL_MAP[part];
+      const spaced = part.replace(/\+/g, " + ");
+      if (JIS_LABEL_MAP[spaced]) return JIS_LABEL_MAP[spaced];
+      const compact = part.replace(/\s*\+\s*/g, "+");
+      if (JIS_LABEL_MAP[compact]) return JIS_LABEL_MAP[compact];
+
+      // 例: LShift+7 -> '（結果1文字）
+      const shiftOnly = compact.match(/^LShift\+(.+)$/);
+      if (shiftOnly && JIS_SHIFT_RESULT_MAP[shiftOnly[1]] !== undefined) {
+        return JIS_SHIFT_RESULT_MAP[shiftOnly[1]];
+      }
+
+      // 修飾ショートカットは左側維持・右側のみ JIS に置換
+      if (compact.includes("+")) {
+        const tokens = compact.split("+");
+        const last = tokens[tokens.length - 1];
+        if (JIS_KEY_TOKEN_MAP[last]) {
+          tokens[tokens.length - 1] = JIS_KEY_TOKEN_MAP[last];
+          return tokens.join("+");
+        }
+      }
+      return part;
+    }).join("\n");
+  }
+
+  function getLegendMode() {
+    return legendJis.checked ? "jis" : "us";
+  }
+
+  function getActiveKeys(layer) {
+    const us = layer.keys;
+    if (getLegendMode() !== "jis") return us.map(toUsLabel);
+    return us.map(toJisLabel);
+  }
+
+  function getActiveKeycodes(layer) {
+    return LAYER_KEYCODES[layer.id] || [];
+  }
+
+  function esc(s) {
+    const d = document.createElement("div");
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  /** 上段＝タップ・下段＝長押し（LT / MT / MO などの2行表記） */
+  function isDualTapHold(label) {
+    const parts = label.split("\n");
+    if (parts.length !== 2) return false;
+    return /^(L[1-8]|LAlt|LShift)$/.test(parts[1].trim());
+  }
+
+  function keyClass(label) {
+    if (isDualTapHold(label)) return "key dual";
+    if (label === "▽") return "key trns";
+    if (label === "·") return "key no";
+    if (label.includes(" + ")) return "key mod";
+    if (/^(LCtrl|LGui|LAlt|RAlt|LShift)(\+|$)/.test(label) || /^(LCtrl|LGui|LAlt|RAlt|LShift)\+/.test(label)) return "key mod";
+    if (/^(F\d|F1\d|Bright|Spd|Smt|Acc|Dec|Snd|Eeprom|ScrollBoost|Play|Prev|Next|Mute|Vol)/i.test(label) || /Play\/Pause|Vol-|Vol\+|Bright-/.test(label)) return "key thumb";
+    if (/^(L\d\b|BkTab|NumLock|Scroll|WH|Enc$)/.test(label) || /ScrollBoost|Scroll/.test(label) || /^(Home|End|Backspace|Delete|PgUp|PgDn|Tab|INT1|INT3)$/.test(label) || /^(LAlt|LGui)$/.test(label) || /^(F5|F6|F7|F8|F9|F1[0-9]|F2[0-4])$/.test(label) || /↑|←|↓|→|WH|⏮|⏭|▶/.test(label)) return "key nav";
+    if (/^(M1|M2|M3)/.test(label)) return "key thumb";
+    if (/Spc|Space\n/.test(label) || /^\\\nL|^¥\nL|Enter\nL/.test(label)) return "key wide";
+    if (label === "Ent" || (label === "Enter" && !label.includes("+") && !label.includes("\n"))) return "key wide";
+    if (/^(Backspace|Delete|Home|End|PgUp|PgDn|Tab|Enc)$/.test(label)) return "key wide";
+    return "key";
+  }
+
+  function rowKeyFix(label, wu, slot) {
+    const c = keyClass(label);
+    const w = wu === 2 ? "calc(2 * var(--u))" : `calc(${wu} * var(--u))`;
+    const parts = label.split("\n").map(esc);
+    const badge = `<span class="slot-badge">#${slot}</span>`;
+    const codeBadge = `<span class="code-badge">${esc(activeKeycodes[slot] || "")}</span>`;
+    return `<div class="${c}" style="width:${w}">${badge}${codeBadge}${parts.join("<br/>")}</div>`;
+  }
+
+  function encHtml(label, slot) {
+    return `<div class="encoder" title="エンコーダ押下（スロット #${slot}）"><span class="slot-badge">#${slot}</span><span class="code-badge">${esc(activeKeycodes[slot] || "")}</span>${esc(label)}</div>`;
+  }
+
+  function renderLayer(layer) {
+    const k = getActiveKeys(layer).slice();
+    activeKeycodes = getActiveKeycodes(layer).slice();
+    let p = 0;
+    let slot = 0;
+    const take = (n) => {
+      const out = k.slice(p, p + n);
+      p += n;
+      return out;
+    };
+
+    const html = [];
+
+    const r0 = take(12);
+    html.push('<div class="row" style="padding-left:calc(0.75 * var(--u))">');
+    for (let j = 0; j < 6; j++) html.push(rowKeyFix(r0[j], 1, slot++));
+    html.push('<div class="sp" style="width:calc(0.75 * var(--u))"></div>');
+    for (let j = 6; j < 11; j++) html.push(rowKeyFix(r0[j], 1, slot++));
+    html.push(rowKeyFix(r0[11], 2, slot++));
+    html.push("</div>");
+
+    const r1 = take(13);
+    html.push('<div class="row" style="padding-left:calc(0.15 * var(--u))">');
+    html.push(rowKeyFix(r1[0], 1.5, slot++));
+    html.push('<div class="sp" style="width:calc(0.1 * var(--u))"></div>');
+    for (let j = 1; j < 6; j++) html.push(rowKeyFix(r1[j], 1, slot++));
+    html.push('<div class="sp" style="width:calc(0.75 * var(--u))"></div>');
+    for (let j = 6; j < 12; j++) html.push(rowKeyFix(r1[j], 1, slot++));
+    html.push(rowKeyFix(r1[12], 1.5, slot++));
+    html.push("</div>");
+
+    const r2 = take(12);
+    html.push('<div class="row">');
+    html.push(rowKeyFix(r2[0], 1.75, slot++));
+    for (let j = 1; j < 6; j++) html.push(rowKeyFix(r2[j], 1, slot++));
+    html.push('<div class="sp" style="width:calc(0.75 * var(--u))"></div>');
+    for (let j = 6; j < 11; j++) html.push(rowKeyFix(r2[j], 1, slot++));
+    html.push(rowKeyFix(r2[11], 2.25, slot++));
+    html.push("</div>");
+
+    const r3 = take(13);
+    html.push('<div class="row">');
+    html.push(rowKeyFix(r3[0], 1.75, slot++));
+    for (let j = 1; j < 6; j++) html.push(rowKeyFix(r3[j], 1, slot++));
+    html.push('<div class="sp" style="width:calc(0.75 * var(--u))"></div>');
+    for (let j = 6; j < 12; j++) html.push(rowKeyFix(r3[j], 1, slot++));
+    html.push(rowKeyFix(r3[12], 1.25, slot++));
+    html.push("</div>");
+
+    const r4 = take(11);
+    html.push('<div class="row" style="padding-left:calc(0.5 * var(--u))">');
+    const w4 = [1.25, 1.25, 1.25, 2.25, 1.25, 2.75, 1, 1, 1, 1];
+    for (let j = 0; j < 10; j++) html.push(rowKeyFix(r4[j], w4[j], slot++));
+    html.push(encHtml(r4[10], slot++));
+    html.push("</div>");
+
+    html.push('<div class="row" style="margin-top:calc(0.25 * var(--u));align-items:center">');
+    html.push('<div class="sp" style="width:calc(3.25 * var(--u))"></div>');
+    html.push('<div class="key wide" style="width:calc(6.25 * var(--u));height:calc(0.82 * var(--u));min-height:calc(0.82 * var(--u));max-height:calc(0.82 * var(--u));opacity:0.88">スペースレール（スタビ）</div>');
+    html.push("</div>");
+
+    if (p !== getActiveKeys(layer).length || activeKeycodes.length !== getActiveKeys(layer).length || slot !== 61) {
+      console.warn("L" + layer.id + " キー数/スロット: keys=" + getActiveKeys(layer).length + " codes=" + activeKeycodes.length + " p=" + p + " slot=" + slot);
+    }
+
+    kb.innerHTML = html.join("");
+    desc.textContent = layer.name;
+    encNote.textContent = "エンコーダ回転: " + layer.enc;
+  }
+
+  function syncBadgeVisibility() {
+    kbWrap.classList.toggle("kb-wrap--hide-slots", !toggleSlots.checked);
+    kbWrap.classList.toggle("kb-wrap--hide-codes", !toggleCodes.checked);
+  }
+
+  toggleSlots.addEventListener("change", syncBadgeVisibility);
+  toggleCodes.addEventListener("change", syncBadgeVisibility);
+  syncBadgeVisibility();
+
+  [legendUs, legendJis].forEach(function (el) {
+    el.addEventListener("change", function () {
+      try {
+        localStorage.setItem(LEGEND_STORAGE_KEY, getLegendMode());
+      } catch (ignore) {}
+      renderLayer(LAYERS[currentLayerIndex]);
+      syncBadgeVisibility();
+    });
+  });
+
+  /** `Layer 0 — BASE` → `BASE`（`name` に — が無ければ全文） */
+  function layerShortName(layer) {
+    const sep = " — ";
+    const i = layer.name.indexOf(sep);
+    return i >= 0 ? layer.name.slice(i + sep.length).trim() : layer.name;
+  }
+
+  LAYERS.forEach((layer, idx) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "layer-tab";
+    b.classList.toggle("active", idx === 0);
+    b.setAttribute("aria-label", layer.name);
+    const numEl = document.createElement("span");
+    numEl.className = "layer-tab__num";
+    numEl.setAttribute("aria-hidden", "true");
+    numEl.textContent = "L" + layer.id;
+    const nameEl = document.createElement("span");
+    nameEl.className = "layer-tab__name";
+    nameEl.textContent = layerShortName(layer);
+    b.appendChild(numEl);
+    b.appendChild(nameEl);
+    b.setAttribute("role", "tab");
+    b.setAttribute("aria-selected", idx === 0 ? "true" : "false");
+    b.addEventListener("click", () => {
+      currentLayerIndex = idx;
+      tabs.querySelectorAll("button.layer-tab").forEach((x, j) => {
+        x.classList.toggle("active", j === idx);
+        x.setAttribute("aria-selected", j === idx ? "true" : "false");
+      });
+      renderLayer(layer);
+      syncBadgeVisibility();
+    });
+    tabs.appendChild(b);
+  });
+
+  renderLayer(LAYERS[0]);
+})();
+  </script>
+</body>
+</html>
