@@ -477,7 +477,7 @@
     <h2>エンコーダ回転（<code>ENCODER_MAP_ENABLE</code> 時）</h2>
     <table>
       <tr><th>レイヤー</th><th>時計回り</th><th>反時計回り</th></tr>
-      <tr><td>0, 2, 8</td><td>Vol+</td><td>Vol−</td></tr>
+      <tr><td>0, 2, 8</td><td>Vol+</td><td>Vol-</td></tr>
       <tr><td>1, 3, 4</td><td>PgUp</td><td>PgDn</td></tr>
       <tr><td>5, 6, 7</td><td>·</td><td>·</td></tr>
     </table>
@@ -514,7 +514,7 @@
     {
       id: 0,
       name: "Layer 0 — BASE",
-      enc: "Vol±（時計回り Vol+ / 反時計回り Vol−）",
+      enc: "Vol±（時計回り Vol+ / 反時計回り Vol-）",
       keys: [
         "LCtrl","Q","W","E","R","T","Y","U","I","O","P","LShift",
         "Esc","F","S","D","A","G","H","N","M","K","-","]\nL5",
@@ -891,6 +891,9 @@
     if (label === "▽" || label === "·") return label;
     const normalized = label.replace(/\s*\+\s*/g, "+").replace(/\n/g, "/");
     const compactParts = normalized.split("/").map((part) => {
+      // `Bright+` や `Vol+` は末尾の `+` が分割で消えるので、先に完全一致で短縮する
+      const whole = shortIntegratedToken(part);
+      if (whole !== part) return whole;
       const tokens = part.split("+").map(shortIntegratedToken);
       // 修飾キーは記号（^ ! + #）で先頭連結し、例: ^+Tab / !#S
       const mods = [];
